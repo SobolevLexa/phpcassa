@@ -11,7 +11,8 @@ class MapType extends CassandraType
     protected $keyType;
     protected $valueType;
 
-    public function __construct(CassandraType $keyType, CassandraType $valueType){
+    public function __construct(CassandraType $keyType, CassandraType $valueType)
+    {
         $this->keyType = $keyType;
         $this->valueType = $valueType;
     }
@@ -27,7 +28,8 @@ class MapType extends CassandraType
         return strrev(pack('s*', $value));
     }
 
-    public function pack(Array $data) {
+    public function pack($data, $is_name = null, $slice_end = null, $is_data = null)
+    {
         $return = $this->writeUInt16BE(count($data));
 
         foreach ($data as $key=>$value){
@@ -42,25 +44,28 @@ class MapType extends CassandraType
         return $return;
     }
 
-    public function unpack($data) {
+    public function unpack($data, $is_name = null)
+    {
+        $items = [];
+        if ($data) {
         $offset = 0;
-        $total = self::readUInt16BE($data,$offset);
+            $total = $this->readUInt16BE($data, $offset);
         $offset += 2;
 
-        $items = [];
         for ($i = 0;$i < $total;$i++){
-            $keyLength = self::readUInt16BE($data,$offset);
+                $keyLength = $this->readUInt16BE($data, $offset);
             $offset += 2;
             $key = $this->keyType->unpack(substr($data,$offset,$keyLength));
             $offset += $keyLength;
-            $valueLength = self::readUInt16BE($data,$offset);
+                $valueLength = $this->readUInt16BE($data, $offset);
             $offset += 2;
-            $value = $this->keyType->unpack(substr($data,$offset,$valueLength));
+                $value = $this->valueType->unpack(substr($data, $offset, $valueLength));
             $offset += $valueLength;
 
             $items[$key] = $value;
         }
 
+        }
         return $items;
     }
 }

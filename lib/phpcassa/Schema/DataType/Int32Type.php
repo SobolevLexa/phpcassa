@@ -16,7 +16,10 @@ class Int32Type extends CassandraType {
 
     public function unpack($data, $is_name=null)
     {
+        if($data !== null) {
         return current(unpack('l', strrev($data)));
+        }
+        return null;
     }
 }
 
