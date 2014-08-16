@@ -6,7 +6,8 @@ namespace phpcassa\Schema\DataType;
  *
  * @package phpcassa\Schema\DataType
  */
-class LongType extends CassandraType {
+class LongType extends CassandraType
+{
 
     public function pack($value, $is_name=null, $slice_end=null, $is_data=null)
     {
@@ -44,6 +45,7 @@ class LongType extends CassandraType {
 
     public function unpack($data, $is_name=null)
     {
+        if ($data) {
         $arr = unpack('N2', $data);
 
         // If we are on a 32bit architecture we have to explicitly deal with
@@ -102,6 +104,8 @@ class LongType extends CassandraType {
             }
         }
         return $value;
+        }
+        return null;
     }
 }
 
